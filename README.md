@@ -2,52 +2,18 @@ Download Weather Data from
 https://tinyurl.com/y4dtdayb
 
 
-wget -O weather.csv https://tinyurl.com/y4dtdayb
+# Weather App
 
-docker cp pokemon.csv cassandra-test:/home/pokemon.csv
+Weather app is a cloud based application, the application performs CRUD operations on weather data for different cities.
 
-CREATE KEYSPACE weather WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 2};
+When a user adds a new city, the application retrieves the current weather from an external api openweathermap.org, and stores the city in Cassandra.
 
-DESCRIBE KEYSPACES
+The CRUD operations are performed on the data in the database
 
-CREATE TABLE weather.city(id int PRIMARY KEY, name text, original text, temperature float, description text, icon text);
+# Docker
 
-DESCRIBE TABLES
+Commands for client docker
 
-COPY weather.city (id,name,original,temperature,description,icon) FROM 'weather.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+`docker build . --tag=weather_client_image:v1`
 
-SELECT * FROM weather.city;
-
-
-INSERT INTO weather.city(ID,Name,Original,Temperature,Description,Icon)
-VALUES (7,Vancouver,Vancouver,14.9,clear sky, 02n);
-
-INSERT INTO weather.city(ID,Name,Original,Temperature,Description,Icon)
-   ... VALUES(7,'Vancouver','Vancouver',14.9,'clear sky','02n');
-
-
-kubectl run weather-app --image=gcr.io/${PROJECT_ID}/weather-app:v1 --port 8080
-
-
-kubectl expose deployment weather-app --type=LoadBalancer --port 80 --target-port 8080
-
-kubectl get services
-
-kubectl cp weather.csv cassandra-npz55:/weather.csv
-
-gcloud container clusters create cassandra --num-nodes=3 --machine-type "n1-standard-2"
-
-
-docker images
-
-docker rmi 
-
-docker build -t gcr.io/${PROJECT_ID}/weather-app:v1 .
-
-docker push gcr.io/${PROJECT_ID}/weather-app:v1
-
-kubectl run weather-app --image=gcr.io/${PROJECT_ID}/weather-app:v1 --port 8080
-
-kubectl expose deployment weather-app --type=LoadBalancer --port 80 --target-port 8080
-
-kubectl get services
+`docker run -p 8080:8081 weather_client_image:v1`
